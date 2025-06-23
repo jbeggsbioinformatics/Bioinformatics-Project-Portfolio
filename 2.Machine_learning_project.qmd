@@ -1,0 +1,1039 @@
+---
+title: "LIFE748 - Machine learning Assignment"
+format: pdf
+editor: visual
+---
+
+# Instructions
+
+This assignment aims to assess your understanding and application of machine learning techniques covered in the lectures and workshops, including k-means clustering, hierarchical clustering, logistic regression, Linear Discriminant Analysis (LDA), and Support Vector Machines (SVM).
+
+### Submission Requirements:
+
+1.  **Quarto Document (.qmd)**: All your answers, code, and explanations must be included within this Quarto document (.qmd)
+
+2.  **PDF Output**: Render your Quarto document into a PDF file.
+
+3.  **Submission**: Submit both the .qmd file and the generated PDF file.
+
+### General Guidelines:
+
+-   **Completeness:** Answer all questions thoroughly, providing the code used.
+
+-   **Code Comments**: Comment your code effectively to explain each step
+
+-   **Programming language:** While R is strongly recommended, you are allowed to use Python for this assignment. Please ensure that all Python code is executed within the Quarto document. No technical support will be provided for Python-related issues.
+
+-   **Minimal Text:** Ensure that your explanations are clear and concise. Focus on providing the reasoning behind your results.
+
+-   **Reproducibility**: Ensure that your code is reproducible. We must be able to run your .qmd file and obtain the same results as in your PDF.
+
+    Good luck!
+
+## Clustering - Unsupervised Learning
+
+I used GAI in the preparation of this assignment, specifically to learn how to create functions to determine data normality, before using conditional statements to select a significant predictor variable at random.
+
+Load the unlabelled dataset provided with the assignment.
+
+```{r, tidy=TRUE}
+#Loading of unsupervised learning dataset
+
+df <- scale(read.csv('Unlabelled_data_Student13.csv', row.names = 1),
+            center = TRUE, scale = FALSE)
+
+#first column of dataset used as row names
+
+#center = TRUE used to subtract the mean of each column from the 
+#values in that column, standardising the data by centering it around 0.
+
+df <- as.data.frame(df) #df is a matrix after the scale function, 
+#this line converts it to a dataframe
+
+```
+
+**Q1:** Apply k-means clustering to the provided dataset. Experiment with at least 3 different values of 'k' (number of clusters).
+
+```{r, tidy=TRUE}
+#K-means clustering: Two clusters (k=2)
+
+set.seed(123)#set seed for reproducibility
+
+library(ggplot2)
+
+k_2 <- kmeans(df, centers = 2, iter.max = 15, nstart=5)
+k_2
+#center = 2 specifies the data to be clustered into 2 clusters
+#iter.max = 15 specifies the maximum number of iterations the 
+#algorithm runs to find the clusters
+
+#nstart = 5 gives the number of different initialisations to run 
+#the K-means algorithm, with the best produced as the final result
+
+#Visualising the clusters with a ggplot2 scatter plot
+
+df$clusters <- as.factor(k_2$cluster) #creates new column in df 
+                                      #for cluster assignments
+
+#as.factor ensures the numeric cluster assignments
+#are converted to categorical variables (factors)
+
+ggplot(df, aes(x=gene1, y=gene2))+geom_point(aes(col=clusters))+
+  theme(panel.background = element_rect(fill = "white",colour = "black",
+                                        linewidth = 1,linetype = "solid"),
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
+        text = element_text(size=20,colour = "black",face = "bold"),
+        legend.key=element_blank())
+#Scatter plot produced to visualise clustering, points coloured based on the cluster column assignment in the df
+
+```
+
+```{r, tidy=TRUE}
+#K-means clustering: Three clusters (k=3)
+
+set.seed(123)#set seed for reproducibility
+
+library(ggplot2)
+
+
+k_3 <- kmeans(df, centers = 3, iter.max = 15, nstart=5)
+k_3
+#center = 3 specifies the data to be clustered into 3 clusters
+#iter.max = 15 specifies the maximum number of iterations the 
+#algorithm runs to find the clusters
+
+#nstart = 5 gives the number of different initialisations to 
+#run the K-means algorithm, with the best produced as the final result
+
+#Visualising the clusters with a ggplot2 scatter plot
+
+df$clusters <- as.factor(k_3$cluster)#creates new column in df for 
+#cluster assignments as.factor ensures the numeric cluster assignments
+#are converted to categorical variables (factors)
+
+ggplot(df, aes(x=gene1, y=gene2))+geom_point(aes(col=clusters))+
+  theme(panel.background = element_rect(fill = "white",colour = "black",
+                                        linewidth = 1,linetype = "solid"),
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
+        text = element_text(size=20,colour = "black",face = "bold"),
+        legend.key=element_blank())
+
+#Scatter plot produced to visualise clustering, points coloured based on the 
+#cluster column assignment in the df
+```
+
+```{r, tidy=TRUE}
+#K-means clustering: Four clusters (k=4)
+
+set.seed(123) #set seed for reproducibility
+
+k_4 <- kmeans(df, centers = 4, iter.max = 15, nstart=5)
+k_4
+#center = 4 specifies the data to be clustered into 4 clusters
+#iter.max = 15 specifies the maximum number of iterations the 
+#algorithm runs to find the clusters
+
+#nstart = 5 gives the number of different initialisations to 
+#run the K-means algorithm, with the best produced as the final result
+
+#Visualising the clusters with a ggplot2 scatter plot
+
+df$clusters <- as.factor(k_4$cluster)#creates new column in 
+#df for cluster assignments as.factor ensures the numeric 
+#cluster assignments are converted to categorical variables (factors)
+
+ggplot(df, aes(x=gene1, y=gene2))+geom_point(aes(col=clusters))+
+  theme(panel.background = element_rect(fill = "white",colour = "black",
+                                        linewidth = 1,linetype = "solid"),
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
+        text = element_text(size=20,colour = "black",face = "bold"),
+        legend.key=element_blank())
+
+#Scatter plot produced to visualise clustering, points coloured based
+#on the cluster column assignment in the df
+```
+
+```{r, tidy=TRUE}
+#K-means clustering: Five clusters (k=5)
+
+set.seed(123) #set seed for reproducibility
+
+k_5 <- kmeans(df, centers = 5, iter.max = 15, nstart=5)
+k_5
+#center = 4 specifies the data to be clustered into 4 clusters
+#iter.max = 15 specifies the maximum number of iterations the 
+#algorithm runs to find the clusters
+
+#nstart = 5 gives the number of different initialisations to 
+#run the K-means algorithm, with the best produced as the final result
+
+#Visualising the clusters with a ggplot2 scatter plot
+
+df$clusters <- as.factor(k_5$cluster) #creates new column in df
+#for cluster assignments as.factor ensures the numeric cluster assignments 
+#are converted to categorical variables (factors)
+
+ggplot(df, aes(x=gene1, y=gene2))+geom_point(aes(col=clusters))+
+  theme(panel.background = element_rect(fill = "white",colour = "black",
+                                        linewidth = 1,linetype = "solid"),
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
+        text = element_text(size=20,colour = "black",face = "bold"),
+        legend.key=element_blank())
+#Scatter plot produced to visualise clustering, points coloured 
+#based on the cluster column assignment in the df
+```
+
+**Q2**: Use the elbow method score to determine the optimal number of clusters for this dataset, and then apply k-means with the chosen k
+
+```{r, tidy=TRUE}
+# Compute and plot within clusters sum of squares for k = 1:10
+
+set.seed(123) #set seed for reproducibility
+k.max <- 10 #maximum number of clusters set at 10
+wss <- sapply(1:k.max,
+function(k){kmeans(df[,1:2], k, nstart=5,iter.max = 15 )$tot.withinss})
+plot(1:k.max, wss,
+type="b", pch = 19, frame = FALSE, xlab="Number of clusters K",
+ylab="Total within-clusters sum of squares")
+
+#Function runs k mean clustering k:1 to 10, using the first two 
+#columns of the dataframe (gene1, gene2)
+
+#tot.withinss extracts the total within-cluster sum of squares (WSS), 
+#measuring the compactness of clusters
+
+#WSS for each k (1:10) are plotted, and the k forming the "elbow" 
+#are selected, in this case 3
+
+#K-mean clustering with the chosen k(3)
+
+out <- kmeans(df, centers = 3, iter.max = 15, nstart=5)
+df$clusters <- as.factor(out$cluster)
+```
+
+**Q3:** Visualise the k-means clustering results.
+
+```{r, tidy=TRUE}
+#Visualistion of k-means clustering results
+
+set.seed(123) #set seed for reproducibility
+
+df_Q3 <- scale(read.csv('Unlabelled_data_Student13.csv', row.names = 1), 
+               center = TRUE, scale = FALSE)
+
+#first column of dataset used as row names
+
+#center = TRUE used to subtract the mean of each column from the values
+#in that column, standardising the data by centering it around 0.
+
+df_Q3 <- as.data.frame(df_Q3)#df is a matrix after the scale function, 
+#this line converts it to a dataframe
+
+# k-means clustering for three clusters
+
+out_Q3 <- kmeans(df_Q3, centers = 3, iter.max = 15, nstart = 5) 
+
+df_Q3$clusters <- as.factor(out_Q3$cluster)
+
+# Plotting of clusters
+
+ggplot(df_Q3, aes(x = gene1, y = gene2)) + 
+  geom_point(aes(col = clusters)) + 
+  theme(
+    panel.background = element_rect(fill = "white", colour = "black", 
+                                    linewidth = 1, linetype = "solid"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    text = element_text(size = 20, colour = "black", face = "bold"),
+    legend.key = element_blank()
+  )
+
+
+```
+
+**Q4**: Perform hierarchical clustering on the same dataset using at least two different linkage methods (e.g., complete linkage, average linkage).
+
+```{r, tidy=TRUE}
+#Hierarchical Clustering using four linkage methods
+
+set.seed(123) #set seed for reproducibility
+
+df_Q4 <- scale(read.csv('Unlabelled_data_Student13.csv', row.names = 1), 
+               center = TRUE, scale = FALSE)
+
+df_Q4 <- as.data.frame(df_Q4)
+
+dist_mat <- dist(df_Q4, method = 'euclidean')
+#Function calculates the distance matrix for the data using Euclidean distance
+#Euclidean distance is the straight-line distance between two points in a 
+#multi-dimensional space.
+
+# Average linkage
+hclust_average <- hclust(dist_mat, method = 'average')
+#Performs hierarchical clustering using average linkage
+df_Q4$clusters_average <- as.factor(cutree(hclust_average, k = 3))
+#Cutree cuts the dendrogram into three clusters
+#Cluster assignents stored in cluster_average column in dataframe, 
+#as categorical values
+
+# Ward's Linkage
+hclust_wards <- hclust(dist_mat, method = 'ward.D')
+#Performs hierarchical clustering using Ward's linkage
+df_Q4$clusters_ward <- as.factor(cutree(hclust_wards, k = 3))
+#Cutree cuts the dendrogram into three clusters
+#Cluster assignents stored in cluster_wards column in dataframe, 
+#as categorical values
+
+# Complete Linkage
+hclust_complete <- hclust(dist_mat, method = 'complete')
+#Performs hierarchical clustering using complete linkage
+df_Q4$clusters_cp <- as.factor(cutree(hclust_complete, k = 3))
+#Cutree cuts the dendrogram into three clusters
+#Cluster assignents stored in cluster_cp column in dataframe, 
+#as categorical values
+
+# Single Linkage
+hclust_single <- hclust(dist_mat, method = 'single')
+#Performs hierarchical clustering using single linkage
+df_Q4$clusters_sl <- as.factor(cutree(hclust_single, k = 3))
+#Cutree cuts the dendrogram into three clusters
+#Cluster assignents stored in cluster_sl column in dataframe, 
+#as categorical values
+
+
+```
+
+**Q5**: Generate dendrograms for each linkage method. Compare the resulting dendrograms. Which linkage method seems to produce more distinct and interpretable clusters?
+
+```{r, tidy=TRUE}
+#Dendrogram Average Linkage
+
+set.seed(123)
+plot(hclust_average)
+rect.hclust(hclust_average , k = 3, border = 2:4) #3 colours used
+                                                  #for borders
+
+```
+
+```{r, tidy=TRUE}
+#Dendrogram Ward's Linkage
+
+set.seed(123)
+plot(hclust_wards)
+rect.hclust(hclust_wards , k = 3, border = 2:4)
+
+```
+
+```{r, tidy=TRUE}
+#Dendrogram Complete Linkage
+
+set.seed(123)
+plot(hclust_complete)
+rect.hclust(hclust_complete, k = 3, border = 2:4) 
+
+```
+
+```{r, tidy=TRUE}
+#Dendrogram Single Linkage
+
+set.seed(123)
+plot(hclust_single)
+rect.hclust(hclust_single, k = 3, border = 2:4) 
+
+
+```
+
+From comparing the cluster dendograms for each linkage method, it was clear that Ward's linkage produced the most distinct and interpretable clusters.
+
+**Q6**: Cut the dendrograms to produce clusters, and compare the resulting clusters to the k-means results. Provide the rationale you used to decide how to cut the tree.
+
+```{r, tidy=TRUE}
+#Average Linkage Clustering
+
+set.seed(123)
+
+df_average <- scale(read.csv('Unlabelled_data_Student13.csv', row.names = 1), 
+                    center = TRUE, scale = FALSE)
+
+df_average <- as.data.frame(df_average)
+
+dist_mat_average <- dist(df_average, method = 'euclidean')
+hclust_average <- hclust(dist_mat_average, method = 'average')
+clusters_average <- cutree(tree = hclust_average, k=3) #3 clusters
+df_average$clusters_average <- as.factor(clusters_average) #
+
+#Cutree cuts the dendrogram into three clusters
+
+#Cluster assignents stored in cluster_average column in 
+#dataframe, as categorical values
+
+ggplot(df_average, aes(x=gene1, y=gene2))+geom_point(aes(col=clusters_average))+
+  theme(panel.background = element_rect(fill = "white",colour = "black",
+                                        linewidth = 1,linetype= "solid"),
+        panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
+        text = element_text(size=20,colour = "black",face = "bold"),
+        legend.key=element_blank())
+
+#Clusters coloured by cluster assignments from the cluster_average column
+
+```
+
+```{r, tidy=TRUE}
+#Ward's Linkage Clustering
+
+set.seed(123)
+
+df_ward <- scale(read.csv('Unlabelled_data_Student13.csv', row.names = 1), 
+                 center = TRUE, scale = FALSE)
+
+df_ward <- as.data.frame(df_ward)
+
+dist_mat_ward <- dist(df_ward, method = 'euclidean')
+hclust_ward <- hclust(dist_mat_ward, method = 'ward.D') #Ward's linkage method
+clusters_ward <- cutree(tree = hclust_ward, k=3) #3 clusters
+df_ward$clusters_ward <- as.factor(clusters_ward)
+#Cutree cuts the dendrogram into three clusters
+#Cluster assignents stored in cluster_ward column in dataframe, 
+#as categorical values
+
+ggplot(df_ward, aes(x=gene1, y=gene2)) + 
+  geom_point(aes(col=clusters_ward)) +
+  theme(panel.background = element_rect(fill = "white", colour = "black",
+                                        linewidth = 1, linetype = "solid"),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        text = element_text(size=20, colour = "black", face = "bold"),
+        legend.key = element_blank())
+
+#Clusters coloured by cluster assignments from the cluster_ward column
+```
+
+```{r, tidy=TRUE}
+#Complete Linkage Clustering
+
+set.seed(123)
+
+df_complete <- scale(read.csv('Unlabelled_data_Student13.csv', row.names = 1), 
+                     center = TRUE, scale = FALSE)
+
+df_complete <- as.data.frame(df_complete)
+
+dist_mat_complete <- dist(df_complete, method = 'euclidean')
+hclust_complete <- hclust(dist_mat_complete, method = 'complete') 
+clusters_complete <- cutree(tree = hclust_complete, k=3) #3 clusters
+df_complete$clusters_complete <- as.factor(clusters_complete)
+#Cutree cuts the dendrogram into three clusters
+#Cluster assignments stored in clusters_complete column in dataframe, 
+#as categorical values
+
+ggplot(df_complete, aes(x=gene1, y=gene2)) + 
+  geom_point(aes(col=clusters_complete)) +
+  theme(panel.background = element_rect(fill = "white", colour = "black",
+                                        linewidth = 1, linetype = "solid"),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        text = element_text(size=20, colour = "black", face = "bold"),
+        legend.key = element_blank())
+
+#Clusters coloured by cluster assignments from the clusters_complete column
+```
+
+```{r, tidy=TRUE}
+#Single Linkage Clustering
+
+set.seed(123)
+
+df_single <- scale(read.csv('Unlabelled_data_Student13.csv', row.names = 1), 
+                   center = TRUE, scale = FALSE)
+
+df_single <- as.data.frame(df_single)
+
+dist_mat_single <- dist(df_single, method = 'euclidean')
+hclust_single <- hclust(dist_mat_single, method = 'single') 
+clusters_single <- cutree(tree = hclust_single, k=3) #3 clusters
+df_single$clusters_single <- as.factor(clusters_single)
+
+#Cutree cuts the dendrogram into three clusters
+
+#Cluster assignents stored in clusters_single column in dataframe, 
+#as categorical values
+
+ggplot(df_single, aes(x=gene1, y=gene2)) + 
+  geom_point(aes(col=clusters_single)) +
+  theme(panel.background = element_rect(fill = "white", colour = "black",
+                                        linewidth = 1, linetype = "solid"),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        text = element_text(size=20, colour = "black", face = "bold"),
+        legend.key = element_blank())
+
+#Clusters coloured by cluster assignments from the clusters_single column
+```
+
+The trees were cut into 3 clusters, based on the elbow test predictions and k-means clustering results. From here each tree was cut based on the linkage methods tested in the dendrograms. From visually comparing the trees it was clear that Ward's linkage with k=3 showed the most distinct clusters. This linkage method specifies the distance between clusters as the increase in the “error sum of squares” (ESS), fusing the two clusters into one cluster. This method aims to minimise the increase in ESS at each step by choosing successive clustering steps (Statistics.com, 2025).
+
+## Supervised Learning/Classifiers
+
+Load the labelled dataset provided with the assignment.
+
+```{r, tidy=TRUE}
+#Supervised Learning
+
+set.seed(123)#set seed for reproducibility
+
+df <- read.csv('Labelled_data_Student15.csv', row.names = 1) 
+#takes first row as row names
+
+
+#head(df) #checking data
+#colnames(df)
+#tail(df)
+dim(df)
+
+
+```
+
+**Logistic Regression:**
+
+**Q7:** Consider only class c1 and class c2. Split the dataset into training and testing sets using a 70/30 split (70% for training).
+
+```{r}
+#Splitting dataset into train and test datasets
+
+set.seed(123)#set seed for reproducibility
+
+# Filter the dataset to only include samples from class c1 and c2
+df <- subset(df, class %in% c("c1", "c2"))
+
+print(df[, ncol(df)]) #checking for correct filtering
+
+# Load caret for data partitioning
+library(caret)
+
+# Data split 70/30 (p=0.7)
+trainIndex <- createDataPartition(df$class, p = 0.7, list = FALSE, times=1)
+df_train <- df[trainIndex, ] # 70% 
+df_validate <- df[-trainIndex, ] # 30% 
+
+table(df_train$class) #check the split datasets
+table(df_validate$class)
+```
+
+**Q8:** Train a logistic regression model on the training set, using only one variable as predictor. Justify your choice.
+
+```{r, tidy=TRUE}
+set.seed(123)
+df_8 <- read.csv('Labelled_data_Student15.csv', row.names = 1) 
+#takes first row as row names
+
+#Predictor vairable selection
+#Metabolite was selected using statistical tests to ensure 
+#a significant seperation between classes. 
+
+# Creation of a vector to store the significant metabolites
+significant_metabolites <- c()
+
+# Function carries out a normality check and then performs 
+#the appropriate test
+
+perform_stat_test <- function(df_8, metabolite_column, target_column) {
+  # Shapiro-Wilk test for normality
+  shapiro_test <- shapiro.test(df_8[[metabolite_column]])
+  # >0.05 is normally distrubuted
+  
+  # If p-value of Shapiro-Wilk test > 0.05, data is normal = t-test
+  if (shapiro_test$p.value > 0.05) {
+    test_result <- t.test(df_8[[metabolite_column]] ~ df_8[[target_column]])
+    test_type <- "t-test"
+  } else {
+    # If data is not normal = Mann-Whitney U Test
+    test_result <- wilcox.test(df_8[[metabolite_column]] ~ df_8[[target_column]])
+    test_type <- "Mann-Whitney U Test"
+  }
+  
+  
+  return(test_result$p.value)
+}
+
+# Perform the test for all metabolites in the dataset
+for (metabolite in names(df_8)[-which(names(df_8) == "class")]) {
+  p_value <- perform_stat_test(df_8, metabolite, "class")
+  
+  # If the p-value is below 0.05, it shows significant separation
+  if (p_value < 0.05) {
+    significant_metabolites <- c(significant_metabolites, metabolite)
+  }
+}
+
+# metabolite randomly selected from the list of significant metabolites
+if (length(significant_metabolites) > 0) {
+  set.seed(123)  # For reproducibility
+  random_metabolite <- sample(significant_metabolites, 1)
+  cat("Randomly selected significant metabolite:", random_metabolite, "\n")
+} else {
+  cat("No significant metabolites found.\n")
+}
+
+
+df_train$class <- factor(df_train$class, levels = c("c1", "c2"), 
+                         labels = c(0, 1))
+
+df_validate$class <- factor(df_validate$class, levels = c("c1", "c2"), 
+                            labels = c(0, 1))
+
+model1 <- glm(class ~ Metabolite1206, data = df_train, 
+              family = 'binomial')
+
+#class is dependant variable (response) and our chosen metabolite is the 
+#indepednant variable (predictor).
+
+#Model is trained using df_train data
+
+summary(model1)#gives coefficients, standard errors, p and z values
+```
+
+To determine a suitable predictor variable (metabolite) for this study, shapiro-wilk tests were carried out for each metabolite to determine normality. If the data followed a a normal distribution (p \> 0.05) t-tests were conducted to compare metabolite levels between classes. In cases where it wasn't, Mann-Whitney U tests were applied for the non-normal data. This enabled the identification of significant metabolites (p \< 0.05) that would likely exhibit a clear seperation between classes. From these identified significant metabolites, one was chosen at random using a fixed seed to ensure reproducability.
+
+**Q9:** Predict the classes for the testing dataset. Estimate the performance of the model, reporting the following: Confusion matrix, Accuracy, Sensitivity and Specificity.
+
+```{r, tidy=TRUE}
+#Prediction of classes using validation (testing) set
+
+set.seed(123)
+
+# Predict probabilities on validation set
+pred <- predict(model1, newdata = df_validate, type = 'response')
+#predict with type=response returns a vector of predicted probabilties
+
+# Convert probabilities to class predictions
+pred[pred>=0.5] <- 1
+pred[pred<0.5] <- 0
+
+CM_glm = confusionMatrix(data=as.factor(pred), as.factor(df_validate$class))
+CM_glm
+#Creates a confusion matrix to compare predicted (pred) and actual class labels (df_validate$class)
+```
+
+Confusion matrix: Model correctly predicted 14/15 for c1 and 8/14 for c2 samples based on metabolite1206 data.
+
+Accuracy: 75.86%
+
+Sensitivity: 93.33%
+
+Specificity: 57.14%
+
+**Q10:** Perform a 7-fold cross validation storing the 7 different values of Accuracy, Sensitivity and Specificity calculated for each fold. Plot the results as boxplots.
+
+```{r, tidy=TRUE}
+#7-fold validation using glm model
+
+set.seed(123)
+
+library(groupdata2)
+library(caret)
+
+df$class <- factor(df$class, levels = c("c1", "c2"), labels = c(0, 1)) 
+# set class labels in binary format
+
+#head(df)
+
+# Prepare dataframe to store results for each fold validation
+metrics_glm <- data.frame(Fold = integer(0), Accuracy = numeric(0), 
+                          Sensitivity = numeric(0), Specificity = numeric(0))
+
+# Creates 7 cross-validation folds from the dataset
+#folds <- fold(data=df,k=7, cat_col =c('class','Metabolite2227'))
+#folds <- folds$.folds
+folds <- fold(data=df, k=7, cat_col="class", )$.folds
+
+# Prepare to store results
+CMs_glm <- list()
+models_glm <- list()
+out_glm <- NULL
+
+
+# Perform 7-fold cross-validation
+
+#For loop performs 7-fold cross-validation by training GLM model on 
+#each fold's training data, predicting class probabilities on the test 
+#data and converting the probabilities to class labels (c1/c2)
+
+#Confusion matrix is then calculated for each fold to 
+#evaluate model performance
+
+for(k in 1:7){
+  df_test <- df[folds == k, ]
+  df_train <- df[folds != k, ]
+  model1 <- glm(class ~ Metabolite1206, data=df_train, family='binomial') #GLM
+  models_glm[[k]] <- model1
+  pred <- predict(model1, newdata=df_test, type='response')
+  pred[pred>=0.5] <- 1
+  pred[pred<0.5] <- 0
+  CM_glm = confusionMatrix(data=as.factor(pred), as.factor(df_test$class))
+  CMs_glm[[k]] <- CM_glm
+  
+  #Creates a confusion matrix to compare predicted (pred) and 
+  #actual class labels 
+  
+  # Store Accuracy, Sensitivity, and Specificity
+  metrics_glm <- rbind(metrics_glm, data.frame(
+    Fold = k,
+    Accuracy = CM_glm$overall["Accuracy"],
+    Sensitivity = CM_glm$byClass["Sensitivity"],
+    Specificity = CM_glm$byClass["Specificity"]
+  ))
+  out_glm <- rbind(out_glm,CM_glm$overall)
+}
+
+# Print cross-validation results
+#print(out_glm)
+print(metrics_glm)
+
+# Calculate and print the average accuracy, sensitivity, and specificity
+avg_accuracy <- mean(metrics_glm$Accuracy)
+avg_sensitivity <- mean(metrics_glm$Sensitivity)
+avg_specificity <- mean(metrics_glm$Specificity)
+
+cat("\nAverage Accuracy across 7 folds: ", avg_accuracy, "\n")
+cat("Average Sensitivity across 7 folds: ", avg_sensitivity, "\n")
+cat("Average Specificity across 7 folds: ", avg_specificity, "\n")
+
+```
+
+```{r, tidy=TRUE}
+set.seed(123)
+
+#Generation of boxplot of Accuracy, Sensitivity, and Specificity 
+#for GLM model across 7-fold validation
+
+library(ggplot2)
+library(reshape2)
+
+#Generation of boxplot of Accuracy, Sensitivity, and Specificity
+metrics_glm_long <- reshape(metrics_glm, 
+                        varying = c("Accuracy", "Sensitivity", "Specificity"), 
+                        v.names = "Value", 
+                        timevar = "Metric", 
+                        times = c("Accuracy", "Sensitivity", "Specificity"), 
+                        direction = "long")
+
+ggplot(metrics_glm_long, aes(x = Metric, y = Value)) + 
+  geom_boxplot(fill = "green", color = "darkgreen") +  
+  # Fill color is green, border is dark green
+  labs(title = "GLM 7-Fold Cross-Validation Metrics", 
+       y = "Value", 
+       x = "Metric") +
+  theme_minimal()
+```
+
+**Linear Discriminant Analysis (LDA):**
+
+**Important note:** LDA can be easily applied to multi-class problems. Feel free to try it!
+
+**Q11:** Using the same train and validation sets (considering only c1 and c2) obtained in **Q7,** train an LDA model with the training data.
+
+```{r, tidy=TRUE}
+set.seed(123)
+
+# Load caret for data partitioning
+library(caret)
+
+#MASS for LDA function
+library(MASS)
+
+table(df_train$class)
+table(df_validate$class)
+
+library(MASS)
+
+model2 <- lda(class~Metabolite1206, data=df_train)
+#lda model trained on training dataset
+print(model2)
+
+```
+
+**Q12:** Visualize the data in the reduced dimensional space produced by LDA.
+
+```{r, tidy=TRUE}
+set.seed(123)
+par(mar = c(4, 4, 2, 1))  #reset figure margins to avoid rendering error
+plot(model2)
+```
+
+**Q13:** Predict the classes for the testing dataset. Estimate the performance of the model, reporting the following: Confusion matrix, Accuracy, Sensitivity and Specificity.
+
+```{r, tidy=TRUE}
+set.seed(123)
+
+#Predictions made on validation dataset using LDA model trained on the 
+#training set
+
+pred <- predict(model2, newdata=df_validate,type="class")
+
+CM_lda = confusionMatrix(data=as.factor(pred$class), 
+                         as.factor(df_validate$class))
+CM_lda
+#Creates a confusion matrix to compare predicted (pred) and 
+#actual class labels 
+
+```
+
+Confusion matrix: Model correctly predicted 14/15 for c1 and 8/14 for c2 samples based on metabolite1206 data.
+
+Accuracy: 75.86%
+
+Sensitivity: 93.33%
+
+Specificity: 57.14%
+
+**Q14:** Perform a 7-fold cross validation storing the 7 different values of Accuracy, Sensitivity and Specificity calculated for each fold. Plot the results as boxplots.
+
+```{r, tidy=TRUE}
+set.seed(123)
+
+library(groupdata2)
+library(caret)
+library(e1071)
+library(ggplot2)
+library(reshape2)
+library(MASS)
+
+# Prepare dataframe to store results for each fold
+metrics_lda <- data.frame(Fold = integer(0), Accuracy = numeric(0), 
+                          Sensitivity = numeric(0), Specificity = numeric(0))
+
+# Creates 7 cross-validation folds from the dataset
+folds <- fold(data=df, k=7, cat_col="class", 
+              handle_existing_fold_cols = "remove")$.folds  
+
+# groupdata2 package used for stratified k-fold
+
+# Prepare to store results
+CMs <- list()
+models <- list()
+
+# Perform 7-fold cross-validation
+
+#For loop performs 7-fold cross-validation by training LDA model on 
+#each fold's training data, predicting class probabilities on the test 
+#data and converting the probabilities to class labels (c1/c2)
+
+#Confusion matrix is then calculated for each fold to evaluate 
+#model performance
+
+for(k in 1:7){
+  df_test <- df[folds == k, ]
+  df_train <- df[folds != k, ]
+  
+  model2 <- lda(class ~ Metabolite1206, data = df_train) 
+  models[[k]] <- model2
+  pred <- predict(model2, newdata=df_test, type="class")$class
+  CM_LDA <- confusionMatrix(data=as.factor(pred), 
+                            reference=as.factor(df_test$class))
+  
+  CMs[[k]] <- CM_LDA
+  #Creates a confusion matrix to compare predicted (pred) 
+  #and actual class labels 
+  
+  # Store Accuracy, Sensitivity, and Specificity
+  metrics_lda <- rbind(metrics_lda, data.frame(
+    Fold = k,
+    Accuracy = CM_LDA$overall["Accuracy"],
+    Sensitivity = CM_LDA$byClass["Sensitivity"],
+    Specificity = CM_LDA$byClass["Specificity"]
+  ))
+}
+
+# Print cross-validation results
+print(metrics_lda)
+
+# Calculate and print the average accuracy, sensitivity, and specificity
+avg_accuracy <- mean(metrics_lda$Accuracy)
+avg_sensitivity <- mean(metrics_lda$Sensitivity)
+avg_specificity <- mean(metrics_lda$Specificity)
+
+cat("\nAverage Accuracy across 7 folds: ", avg_accuracy, "\n")
+cat("Average Sensitivity across 7 folds: ", avg_sensitivity, "\n")
+cat("Average Specificity across 7 folds: ", avg_specificity, "\n")
+
+
+```
+
+```{r, tidy=TRUE}
+set.seed(123)
+#Generation of boxplot of Accuracy, Sensitivity, and 
+#Specificity for LDA model across 7-fold validation
+
+metrics_lda_long <- melt(metrics_lda, id.vars = "Fold", 
+                     variable.name = "Metric", 
+                     value.name = "Value")
+
+# Boxplot plotting
+ggplot(metrics_lda_long, aes(x = Metric, y = Value)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "LDA 7-Fold Cross-Validation Metrics",
+       x = "Metric", y = "Score") +
+  theme_minimal()
+
+```
+
+**Support Vector Machines (SVM):**
+
+**Q15:** Using the same train and validation sets (considering only c1 and c2) obtained in **Q7,** train a SVM model with the training data.
+
+```{r, tidy=TRUE}
+library(e1071)
+library(caret)
+
+set.seed(123)
+
+#Predictions made on validation dataset using SVM model 
+#trained on the training set
+
+model3 <- svm(class~Metabolite1206, data=df_train)
+summary(model3)
+
+```
+
+**Q16:** Predict the classes for the testing dataset. Estimate the performance of the model, reporting the following: Confusion matrix, Accuracy, Sensitivity and Specificity.
+
+```{r, tidy=TRUE}
+set.seed(123)
+
+pred <- predict(model3, newdata=df_validate,type="class")
+CM = confusionMatrix(data=as.factor(pred), as.factor(df_validate$class))
+CM
+#Creates a confusion matrix to compare predicted (pred) and actual class labels 
+```
+
+Confusion matrix: Model correctly predicted 14/15 for c1 and 9/14 for c2 samples based on metabolite1206 data.
+
+Accuracy: 79.31%
+
+Sensitivity: 93.33%
+
+Specificity: 64.29%
+
+**Q17:** Perform a 7-fold cross validation storing the 7 different values of Accuracy, Sensitivity and Specificity calculated for each fold. Plot the results as boxplots.
+
+```{r, tidy=TRUE}
+set.seed(123)
+
+library(groupdata2)
+library(caret)
+library(e1071)
+library(ggplot2)
+library(reshape2)
+
+# Prepare dataframe to store results for each fold
+metrics <- data.frame(Fold = integer(0), Accuracy = numeric(0), 
+                      Sensitivity = numeric(0), Specificity = numeric(0))
+
+# Creates 7 cross-validation folds from the dataset
+folds <- fold(data=df, k=7, cat_col="class")$.folds 
+# Prepare to store results
+CMs <- list()
+models <- list()
+
+
+# Perform 7-fold cross-validation
+
+#For loop performs 7-fold cross-validation by training SVM model 
+#on each fold's training data, predicting class probabilities on the 
+#test data and converting the probabilities to class labels (c1/c2)
+
+
+#Confusion matrix is then calculated for each fold to 
+#evaluate model performance
+
+for(k in 1:7){
+  df_test <- df[folds == k, ]
+  df_train <- df[folds != k, ]
+  model3 <- svm(class ~ Metabolite1206, data = df_train)
+  models[[k]] <- model3
+  pred <- predict(model3, newdata=df_test, type= "class")
+  CM = confusionMatrix(data=as.factor(pred), as.factor(df_test$class))
+  CMs[[k]] <- CM
+  #Creates a confusion matrix to compare predicted (pred) 
+  #and actual class labels 
+  
+  # Store Accuracy, Sensitivity, and Specificity
+  metrics <- rbind(metrics, data.frame(
+    Fold = k,
+    Accuracy = CM$overall["Accuracy"],
+    Sensitivity = CM$byClass["Sensitivity"],
+    Specificity = CM$byClass["Specificity"]
+  ))
+  
+}
+# Print cross-validation results
+print(metrics)
+
+# Calculate and print the average accuracy, sensitivity, 
+#and specificity
+
+avg_accuracy <- mean(metrics$Accuracy)
+avg_sensitivity <- mean(metrics$Sensitivity)
+avg_specificity <- mean(metrics$Specificity)
+
+cat("\nAverage Accuracy across 7 folds: ", avg_accuracy, "\n")
+cat("Average Sensitivity across 7 folds: ", avg_sensitivity, "\n")
+cat("Average Specificity across 7 folds: ", avg_specificity, "\n")
+
+```
+
+```{r, tidy=TRUE}
+set.seed(123)
+
+#Generation of boxplot of Accuracy, Sensitivity, 
+#and Specificity for SVM model across 7-fold validation
+
+metrics_long <- melt(metrics, id.vars = "Fold", 
+                     variable.name = "Metric", 
+                     value.name = "Value")
+
+# Boxplot
+ggplot(metrics_long, aes(x = Metric, y = Value)) +
+  geom_boxplot(fill = "red") +
+  labs(title = "SVM 7-Fold Cross-Validation Metrics",
+       x = "Metric", y = "Score") +
+  theme_minimal()
+
+```
+
+```{r, tidy=TRUE}
+# Perform Shapiro-Wilk test for normality of Metabolite1206 data
+shapiro_test_result <- shapiro.test(df$Metabolite1206)
+
+print(shapiro_test_result) # p value <0.05 = not normally distributed
+
+```
+
+**Q18:** Using the values and boxplots generated in **Logistic Regression - Q10, Q14** and **Q17**, compare and discuss the performances of the models.
+
+**Experimental Setup**
+
+The datasets were filtered for classes c1 and c2, and subsequently accessed with 7-fold cross validation, using metabolite1206 as the predictor. Each of the three models (GLM, LDA and SVM) were trained on the same training folds and validated using the same testing folds. Cross-validation essentially assesses the performance of the models by splitting the data into 7 equal folds. The models are trained and tested 7 times to assess their predictive capabilites when applied to different subsets of the data.
+
+Following 7-fold validation the GLM model and LDA exhibited 71.84% accuracy, 82.43% sensitivity and 61.33% specificity on average. While the SVM model exhibited 70.82% accuracy, 80.64% sensitivity and 61.33% specificity on average. Overall, the LDA and GLM models performed the best in terms of accurately predicting the class based on metabolite1206 data.
+
+**Metric Comparison**
+
+All three models had the same accuracy for predicting the class in folds 1,2,3,4,6 and 7. However, in fold 5 the GLM and LDA models outperformed the SVM model, meaning it correctly predicted the class (c1 or c2) more often. In terms of sensitivity, all 3 models had the same sensitivity in folds 1,2,3,4,6 and 7. However, in fold 5 the GLM and LDA models outperformed the SVM model, making them best for detecting the positive class cases (c1). All 3 models had the same specificity across all folds, meaning each model was equally good at identifying negative class cases (c2). The boxplots visualise the superior sensitivity of the GLM and LDA models compared to the SVM model, while the difference in accuracy is less noticeable. Since the same folds were used for all 3 models and only a single variable was used for class predictions, it is likely that this contributes to their similar performances across the 7-fold validation.
+
+**Model Performance Across Folds**
+
+All models performed the same in folds 1,2,3,6 and 7 across all metrics, however LDA and GLM outperformed SVM in sensitivity and specificity in fold 5.
+
+**Optimal Model**
+
+For balanced performance across all metrics and maximization of overall predictive accuracy GLM or LDA would be the best model choices.
+
+**Difference in the Models**
+
+GLM and LDA models both assume a linear decision boundary between classes, and since we are using a single metabolite, they only need to determine a single threshold to separate classes. This is likely why they are performing identically across the 7 folds. LDA models class distributions using Bayes’ theorem for classification, whereas GLM calculates a decision boundary through maximum likelihood (Carrizosa et al., 2021). In contrast, SVM models are non parametric and focus on maximising the margin between classes rather than directly modeling class distributions. Unlike LDA and GLM, which assume linearity, SVM uses kernel functions to map data into higher-dimensional spaces. However, with only one predictor variable, SVM reduces to a simple threshold-based classifier - losing its advantage in handling complex patterns (Ricarda et al., 2022).
+
+**References**
+
+Carrizosa, E., Marcela Galvis Restrepo and Dolores Romero Morales (2021). On clustering categories of categorical predictors in generalized linear models. *Expert systems with applications*, 182, pp.115245–115245. doi:https://doi.org/10.1016/j.eswa.2021.115245.
+
+Graf, R., Zeldovich, M. and Friedrich, S. (2022). Comparing linear discriminant analysis and supervised learning algorithms for binary classification—A method comparison study. *Biometrical Journal*. doi:https://doi.org/10.1002/bimj.202200098.
+
+Statistics.com (2025). *Ward´s Linkage*. \[online\] Statistics.com: Data Science, Analytics & Statistics Courses. Available at: https://www.statistics.com/glossary/wards-linkage/.
